@@ -83,8 +83,12 @@ class EventEmitter(BaseModel):
             _logger.warning(f"Event {event_name} has no listeners")
             return
 
-        for callback_wrapper in self.listeners[event_name]:
-            await callback_wrapper.execute(Event(name=event_name, **kwargs))
+        await asyncio.gather(
+            *[
+                callback_wrapper.execute(Event(name=event_name, **kwargs))
+                for callback_wrapper in self.listeners[event_name]
+            ]
+        )
 
         self.listeners[event_name] = set(
             callback_wrapper
