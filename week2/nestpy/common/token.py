@@ -186,8 +186,6 @@ class InstanceInitiator:
         params: dict[str, Any] = {}
         self._instance_manager.mark_pending(cls)
 
-        # _logger.info(cls)
-
         for var_name, param in sig.parameters.items():
             if var_name == "self":
                 continue
