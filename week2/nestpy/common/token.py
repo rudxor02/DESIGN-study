@@ -16,6 +16,17 @@ from .types import Class, Instance, Token
 _logger = logging.getLogger(__name__)
 
 
+def pass_init(self, /, *args, **kwargs):
+    pass
+
+
+pass_init_sig = signature(pass_init)
+
+
+def default_init(self):
+    pass
+
+
 class AddingTokenDecorator(ABC):
     """
     Abstract class of Adding token decorator
@@ -32,6 +43,9 @@ class AddingTokenDecorator(ABC):
         should not be typed because of typing erases type annotation of decorated class
         but please ignore for [reportUntypedClassDecorator](https://github.com/microsoft/pyright/blob/main/docs/configuration.md#reportUntypedClassDecorator) warning...
         """
+        if signature(cls.__init__) == pass_init_sig:
+            cls.__init__ = default_init
+            _logger.warn(f"write explicit __init__ for {cls.__name__}")
         setattr(cls, TOKEN_ATTR, self.token_prefix + cls.__name__)
         return cls
 
@@ -140,6 +154,7 @@ class InstanceInitiator:
                 )
             self.register_cls(param_cls)
         self._instance_manager.register_cls(cls)
+        _logger.info(f"{cls.__name__} registered")
 
         # TODO checking module dependency: is this best?
         if hasattr(cls, MODULE_CONTROLLER_ATTR):
@@ -153,6 +168,7 @@ class InstanceInitiator:
         if wrapper.instance_registered:
             return wrapper.instance
         instance = self._init_instance(cls)
+        _logger.info(f"{cls.__name__} initialized")
         self._instance_manager.register_instance(instance)
 
         # TODO checking module dependency: is this best?
@@ -188,3 +204,6 @@ class InstanceInitiator:
             params[var_name] = param_instance
 
         return cls(**params)
+
+    def get_controllers(self) -> list[Instance]:
+        return self._instance_manager.get_controllers()

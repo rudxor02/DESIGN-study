@@ -3,13 +3,18 @@ from typing import Generic, TypeVar
 T = TypeVar("T")
 
 
-class Query(Generic[T]):
+class RequestArgument(Generic[T]):
+    def __init__(self, data: T):
+        self.data = data
+
+
+class Query(RequestArgument[T]):
     pass
 
 
-class Param(Generic[T]):
+class Param(RequestArgument[T]):
     pass
 
 
-class Body(Generic[T]):
+class Body(RequestArgument[T]):
     pass

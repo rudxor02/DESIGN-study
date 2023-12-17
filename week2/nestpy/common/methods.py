@@ -12,15 +12,16 @@ class ParameterInfo(BaseModel):
     name: str
     type: Class
     default: Any | _empty = _empty
-    required: bool = False
+    required: bool = True
 
 
 class APIInfo(BaseModel):
     path: str
-    method: Literal["get", "post"]
-    path_params: dict[str, ParameterInfo] = {}
-    query_params: dict[str, ParameterInfo] = {}
-    body_params: dict[str, ParameterInfo] = {}
+    request_method: Literal["GET", "POST"]
+    func_name: str
+    path_param_info_dict: dict[str, ParameterInfo] = {}
+    query_param_info_dict: dict[str, ParameterInfo] = {}
+    body_param_info_dict: dict[str, ParameterInfo] = {}
 
 
 def get_api_info(func: MethodFunction) -> APIInfo:
@@ -39,10 +40,15 @@ class Method(ABC):
         sig = signature(func)
         func_params = sig.parameters
 
-        if (method_name := self.__class__.__name__.lower()) not in ["get", "post"]:
+        if (request_method_name := self.__class__.__name__.upper()) not in [
+            "GET",
+            "POST",
+        ]:
             raise NotImplementedError("only get and post are supported")
 
-        api_info = APIInfo(path=self.path, method=method_name)
+        api_info = APIInfo(
+            path=self.path, request_method=request_method_name, func_name=func.__name__
+        )
 
         for var_name, param in func_params.items():
             if var_name == "self":
@@ -66,11 +72,11 @@ class Method(ABC):
 
             # TODO how to check generic type?
             if "Body" in str(annotation):
-                api_info.body_params[var_name] = param_info
+                api_info.body_param_info_dict[var_name] = param_info
             elif "Param" in str(annotation):
-                api_info.path_params[var_name] = param_info
+                api_info.path_param_info_dict[var_name] = param_info
             elif "Query" in str(annotation):
-                api_info.query_params[var_name] = param_info
+                api_info.query_param_info_dict[var_name] = param_info
             else:
                 raise ValueError(f"invalid annotation {param.annotation}")
 
