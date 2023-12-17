@@ -26,6 +26,13 @@ pytest week1/test/
 
 nestpy 구현 (base dir은 `week2/` 입니다)
 
+대략적인 동작 원리는 다음과 같습니다.
+
+1. decorator에서 class에 token을 달아줍니다.
+2. root module을 register하면 해당 module에 의존성이 있는 module, controller, provider 등을 재귀적으로 register하고, instantiate합니다.
+3. controller는 method decorator에서 method (function) 객체에 api에 관한 정보들을 달아줍니다.
+4. handler builder가 이 정보들을 모아서 handler를 생성합니다.
+
 ## 패키지 설치
 
 ```bash
