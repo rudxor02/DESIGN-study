@@ -74,3 +74,28 @@ class TestToken:
             instance_initiator.get_or_init_instance(test_service1_cls),
             test_service1_cls,
         )
+
+    def test_register_module(
+        self,
+        instance_initiator: InstanceInitiator,
+        test_module_cls: type,
+        test_service1_cls: type,
+        test_controller_cls: type,
+    ):
+        instance_initiator.register_cls(test_module_cls)
+        assert instance_initiator._instance_manager.get_wrapper(test_service1_cls)
+        assert instance_initiator._instance_manager.get_wrapper(test_controller_cls)
+        assert instance_initiator._instance_manager.get_wrapper(test_module_cls)
+
+        assert isinstance(
+            instance_initiator.get_or_init_instance(test_module_cls),
+            test_module_cls,
+        )
+        assert isinstance(
+            instance_initiator.get_or_init_instance(test_controller_cls),
+            test_controller_cls,
+        )
+        assert isinstance(
+            instance_initiator.get_or_init_instance(test_service1_cls),
+            test_service1_cls,
+        )

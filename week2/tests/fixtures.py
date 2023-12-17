@@ -1,6 +1,6 @@
 import pytest
 
-from week2.nestpy.common import Injectable, InstanceInitiator
+from week2.nestpy.common import Controller, Injectable, InstanceInitiator, Module
 
 
 @pytest.fixture(scope="function")
@@ -36,3 +36,22 @@ def test_service3_cls(test_service2_cls: type, test_service1_cls: type):
             pass
 
     return TestService3
+
+
+@pytest.fixture(scope="function")
+def test_controller_cls(test_service1_cls: type):
+    @Controller("test")
+    class TestController:
+        def __init__(self, service: test_service1_cls):
+            pass
+
+    return TestController
+
+
+@pytest.fixture(scope="function")
+def test_module_cls(test_service1_cls: type, test_controller_cls: type):
+    @Module({"controller": test_controller_cls, "provider": test_service1_cls})
+    class TestModule:
+        pass
+
+    return TestModule
