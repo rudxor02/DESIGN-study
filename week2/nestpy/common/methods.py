@@ -1,14 +1,11 @@
 from abc import ABC
 from inspect import _empty, signature
-from typing import Any, Callable, Literal, Union
+from typing import Any, Literal, Union
 
 from pydantic import BaseModel
 
-from .token import Class
-
-API_INFO_ATTR = "_nestpy_api_info"
-
-MethodFunction = Callable[..., Any]
+from .constants import API_INFO_ATTR
+from .types import Class, MethodFunction
 
 
 class ParameterInfo(BaseModel):

@@ -1,15 +1,14 @@
 from .controller import Controller
 from .injectable import Injectable
-from .methods import APIInfo, Get, MethodFunction, ParameterInfo, Post
+from .methods import APIInfo, Get, ParameterInfo, Post
 from .module import Module
 from .request import Body, Param, Query
 from .token import (
     AddingTokenDecorator,
-    Class,
-    Instance,
     InstanceInitiator,
     InstanceManager,
 )
+from .types import Class, Instance, MethodFunction, Token
 
 __all__ = [
     "Module",
@@ -27,5 +26,6 @@ __all__ = [
     "Instance",
     "MethodFunction",
     "APIInfo",
+    "Token",
     "ParameterInfo",
 ]

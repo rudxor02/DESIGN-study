@@ -1,6 +1,7 @@
 from typing import TypedDict
 
-from .token import INJECTABLE_TOKEN_PREFIX, AddingTokenDecorator
+from .constants import INJECTABLE_TOKEN_PREFIX
+from .token import AddingTokenDecorator
 
 
 class InjectableConfig(TypedDict):

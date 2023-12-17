@@ -1,14 +1,13 @@
 from typing import TypedDict
 
-from .methods import API_INFO_ATTR, APIInfo, get_api_info
-from .token import CONTROLLER_TOKEN_PREFIX, AddingTokenDecorator, Class
+from .constants import API_INFO_ATTR, API_INFO_LIST_ATTR, CONTROLLER_TOKEN_PREFIX
+from .methods import APIInfo, get_api_info
+from .token import AddingTokenDecorator
+from .types import Class
 
 
 class ControllerConfig(TypedDict):
     pass
-
-
-API_INFO_LIST_ATTR = "_nestpy_api_info_list"
 
 
 def get_api_info_list(cls: Class) -> list[APIInfo]:
