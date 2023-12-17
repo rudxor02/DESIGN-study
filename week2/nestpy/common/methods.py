@@ -11,8 +11,8 @@ from .types import Class, MethodFunction
 class ParameterInfo(BaseModel):
     name: str
     type: Class
-    default: Any | _empty = _empty
-    required: bool = True
+    default: Any | _empty
+    required: bool
 
 
 class APIInfo(BaseModel):
