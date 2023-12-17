@@ -5,18 +5,15 @@ from typing import Any
 
 from pydantic import BaseModel
 
+from .constants import (
+    CONTROLLER_TOKEN_PREFIX,
+    MODULE_CONTROLLER_ATTR,
+    MODULE_PROVIDER_ATTR,
+    TOKEN_ATTR,
+)
+from .types import Class, Instance, Token
+
 _logger = logging.getLogger(__name__)
-
-
-_token_attr = "_nestpy_token"
-
-CONTROLLER_TOKEN_PREFIX = "controller:"
-INJECTABLE_TOKEN_PREFIX = "injectable:"
-MODULE_TOKEN_PREFIX = "module:"
-
-Token = str
-Class = type[Any]
-Instance = Any
 
 
 class AddingTokenDecorator(ABC):
@@ -35,7 +32,7 @@ class AddingTokenDecorator(ABC):
         should not be typed because of typing erases type annotation of decorated class
         but please ignore for [reportUntypedClassDecorator](https://github.com/microsoft/pyright/blob/main/docs/configuration.md#reportUntypedClassDecorator) warning...
         """
-        setattr(cls, _token_attr, self.token_prefix + cls.__name__)
+        setattr(cls, TOKEN_ATTR, self.token_prefix + cls.__name__)
         return cls
 
 
@@ -77,7 +74,7 @@ class InstanceManager:
         self._instances: dict[Token, InstanceWrapper] = {}
 
     def _get_token(self, cls: Class) -> Token:
-        if (token := getattr(cls, _token_attr, None)) is None:
+        if (token := getattr(cls, TOKEN_ATTR, None)) is None:
             raise ValueError(f"token is not set for {cls.__name__}")
         return token
 
@@ -142,8 +139,14 @@ class InstanceInitiator:
                     f"set annotation to {var_name} in  {cls.__name__} init function"
                 )
             self.register_cls(param_cls)
-            # self._instance_manager.register_cls(param_cls)
         self._instance_manager.register_cls(cls)
+
+        # TODO checking module dependency: is this best?
+        if hasattr(cls, MODULE_CONTROLLER_ATTR):
+            self.register_cls(getattr(cls, MODULE_CONTROLLER_ATTR))
+
+        if hasattr(cls, MODULE_PROVIDER_ATTR):
+            self.register_cls(getattr(cls, MODULE_PROVIDER_ATTR))
 
     def get_or_init_instance(self, cls: Class) -> Instance:
         wrapper = self._instance_manager.get_wrapper(cls)
@@ -151,6 +154,14 @@ class InstanceInitiator:
             return wrapper.instance
         instance = self._init_instance(cls)
         self._instance_manager.register_instance(instance)
+
+        # TODO checking module dependency: is this best?
+        if hasattr(cls, MODULE_CONTROLLER_ATTR):
+            self.get_or_init_instance(getattr(cls, MODULE_CONTROLLER_ATTR))
+
+        if hasattr(cls, MODULE_PROVIDER_ATTR):
+            self.get_or_init_instance(getattr(cls, MODULE_PROVIDER_ATTR))
+
         return instance
 
     def _init_instance(self, cls: Class) -> Instance:
