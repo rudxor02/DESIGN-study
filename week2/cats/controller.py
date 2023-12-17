@@ -5,7 +5,7 @@ from cats.service import CatsService
 from nestpy.common import Body, Controller, Get, Param, Post, Query
 
 
-@Controller()
+@Controller("cats")
 class CatsController:
     def __init__(self, service: CatsService):
         self.service = service

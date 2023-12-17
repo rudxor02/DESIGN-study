@@ -1,10 +1,15 @@
-class Query:
+from typing import Generic, TypeVar
+
+T = TypeVar("T")
+
+
+class Query(Generic[T]):
     pass
 
 
-class Param:
+class Param(Generic[T]):
     pass
 
 
-class Body:
+class Body(Generic[T]):
     pass
