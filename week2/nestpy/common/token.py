@@ -45,7 +45,7 @@ class AddingTokenDecorator(ABC):
         """
         if signature(cls.__init__) == pass_init_sig:
             cls.__init__ = default_init
-            _logger.warn(f"write explicit __init__ for {cls.__name__}")
+            _logger.warning(f"write explicit __init__ for {cls.__name__}")
         setattr(cls, TOKEN_ATTR, self.token_prefix + cls.__name__)
         return cls
 

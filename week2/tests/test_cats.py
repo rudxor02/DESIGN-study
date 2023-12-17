@@ -23,7 +23,7 @@ cats: list[Cat] = [
 ]
 
 
-@pytest.mark.server
+@pytest.mark.cats
 class TestCats:
     """
     Turn on server and test cats module
