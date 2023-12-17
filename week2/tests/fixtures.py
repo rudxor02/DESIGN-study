@@ -1,4 +1,5 @@
 import pytest
+from httpx import Client
 
 from week2.nestpy.common import Controller, Injectable, InstanceInitiator, Module
 
@@ -55,3 +56,8 @@ def test_module_cls(test_service1_cls: type, test_controller_cls: type):
         pass
 
     return TestModule
+
+
+@pytest.fixture(scope="function")
+def test_http_client():
+    return Client()
