@@ -24,8 +24,8 @@ class CatsService:
 
         return [cat for cat in cats if filter(cat)]
 
-    def get(self, name: str):
+    def get(self, id: str):
         for cat in cats:
-            if cat.name == name:
+            if cat.id == id:
                 return cat
         raise Exception("Cat not found")
