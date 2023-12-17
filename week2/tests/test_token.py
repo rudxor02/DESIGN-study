@@ -9,6 +9,16 @@ _logger = logging.getLogger(__name__)
 
 @pytest.mark.token
 class TestToken:
+    def test_register_undecorated_class(
+        self,
+        instance_initiator: InstanceInitiator,
+    ):
+        class UndecoratedClass:
+            pass
+
+        with pytest.raises(ValueError):
+            instance_initiator.register_cls(UndecoratedClass)
+
     def test_register_2classes(
         self,
         instance_initiator: InstanceInitiator,
