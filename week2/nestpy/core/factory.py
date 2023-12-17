@@ -59,7 +59,7 @@ class NestPyHTTPRequestHandlerBuilder:
 
     def match_path(self, path: str, nestpy_path: str) -> Optional[dict[str, str]]:
         splitted_path = path.strip("/").split("/")
-        splitted_nestpy_path = nestpy_path.split("/")
+        splitted_nestpy_path = nestpy_path.strip("/").split("/")
         if len(splitted_path) != len(splitted_nestpy_path):
             return None
         path_params: dict[str, str] = {}
@@ -91,7 +91,11 @@ class NestPyHTTPRequestHandlerBuilder:
             body_param_info_dict: dict[str, ParameterInfo], body: dict[str, Any]
         ) -> dict[str, Body[Any]]:
             return_val: dict[str, Body[Any]] = {}
-            for param_name, _param_info in body_param_info_dict.items():
+            for param_name, param_info in body_param_info_dict.items():
+                if BaseModel in param_info.type.__bases__:
+                    print(body)
+                    return_val[param_name] = Body(param_info.type(**body))
+                    continue
                 return_val[param_name] = Body(body)
             return return_val
 
@@ -108,8 +112,9 @@ class NestPyHTTPRequestHandlerBuilder:
                         raise ValueError(f"missing required query param: {param_name}")
                     if param_info.default is _empty:
                         raise Exception(
-                            f"missing default value for query param: {param_name}"
+                            f"missing value for query param: {param_name} {param_info}"
                         )
+                    return_val[param_name] = Query(param_info.default)
             return return_val
 
         def _nestpy_process_request(self: NestPyHTTPRequestHandler):
@@ -124,7 +129,9 @@ class NestPyHTTPRequestHandlerBuilder:
                     else:
                         content_len = int(self.headers.get("Content-Length"))
                         post_body = self.rfile.read(content_len)
+                        post_body = post_body.decode("utf-8")
                         post_body = loads(post_body)
+                        print(post_body)
 
                     func = getattr(instance, api_info.func_name)
                     res = func(
@@ -145,6 +152,9 @@ class NestPyHTTPRequestHandlerBuilder:
                     if isinstance(res, BaseModel):
                         res = res.json()
                     if isinstance(res, dict):
+                        res = dumps(res)
+                    if isinstance(res, list):
+                        res = [x.dict() for x in res]
                         res = dumps(res)
                     if isinstance(res, str):
                         res = res.encode()
