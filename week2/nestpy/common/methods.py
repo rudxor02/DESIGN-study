@@ -14,6 +14,9 @@ class ParameterInfo(BaseModel):
     default: Any | _empty
     required: bool
 
+    class Config:
+        arbitrary_types_allowed = True
+
 
 class APIInfo(BaseModel):
     path: str
