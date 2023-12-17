@@ -1,8 +1,7 @@
 import logging
 
 import pytest
-
-from week2.nestpy.common import InstanceInitiator
+from nestpy.common import InstanceInitiator
 
 _logger = logging.getLogger(__name__)
 

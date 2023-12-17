@@ -1,7 +1,6 @@
 import pytest
 from httpx import Client
-
-from week2.nestpy.common import Controller, Injectable, InstanceInitiator, Module
+from nestpy.common import Controller, Injectable, InstanceInitiator, Module
 
 
 @pytest.fixture(scope="function")

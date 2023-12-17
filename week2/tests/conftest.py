@@ -1,5 +1,9 @@
-from lib.logger import setup_logger
+import logging
 
-setup_logger()
+# week2 base dir is not root
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(process)d:%(name)s:%(lineno)s] [%(levelname)s] %(message)s",
+)
 
-pytest_plugins = ["week2.tests.fixtures"]
+pytest_plugins = ["tests.fixtures"]
